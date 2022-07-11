@@ -3,34 +3,21 @@
 	let damagedCells = 0;
 	let shipsLeft = 0;
 	let attempts = 0;
-	let text = "Sea battle";
+	let text = "The Empire set it's ships in your sea. Find and sink them!";
+	let textOption= '';
 	let unicornState = false;
 	let powerLevel=0;
 
 
-
+    
 
 	const fieldSize = 6;
-	const cells = [];
+	let cells = [];
 
-	for (let counter = 0; counter < fieldSize * fieldSize; counter++) {
-		cells.push({ ship: false, checked: false });
-	}
-	let ships = [
-		{ shipLength: 3, isSunk: false, cellDamage: 0, coords: [] },
-
-		{ shipLength: 2, isSunk: false, cellDamage: 0, coords: [] },
-
-		{ shipLength: 2, isSunk: false, cellDamage: 0, coords: [] },
-
-		{ shipLength: 1, isSunk: false, cellDamage: 0, coords: [] },
-
-		{ shipLength: 1, isSunk: false, cellDamage: 0, coords: [] },
-	];
+	let ships;
 
 	// getting ships set//
-	let occupied = [];
-
+	let occupied;
 	let directions = [
 		{ x: 1, y: 0 }, // right
 		{ x: 0, y: 1 }, // bottom
@@ -86,43 +73,46 @@
 		return true;
 	};
 
-	for (let i = 0; i < ships.length; i++) {
-		// for each ship
-		let obj = {
-			x: Math.floor(Math.random() * fieldSize),
-			y: Math.floor(Math.random() * fieldSize),
-		};
+	restart();
 
-		if (!getCoords(i, obj)) {
-			i--;
-			continue;
+	function placeShips(){
+		for (let i = 0; i < ships.length; i++) {
+			// for each ship
+			let obj = {
+				x: Math.floor(Math.random() * fieldSize),
+				y: Math.floor(Math.random() * fieldSize),
+			};
+
+			if (!getCoords(i, obj)) {
+				i--;
+				continue;
+			}
+			console.log(ships[i]);
+			occupied.push(...ships[i].coords);
+
+			ships[i].coords.forEach((i) => {
+				let y = Math.floor(i / fieldSize);
+				let x = i % fieldSize;
+
+				let neighbors = [
+					{ x: x + 1, y },
+					{ x: x - 1, y },
+					{ x, y: y + 1 },
+					{ x, y: y - 1 },
+					{ x: x + 1, y: y - 1 },
+					{ x: x + 1, y: y + 1 },
+					{ x: x - 1, y: y + 1 },
+					{ x: x - 1, y: y - 1 },
+				];
+
+				let validNeigbors = neighbors
+					.filter(validPos)
+					.map((o) => o.x + o.y * fieldSize);
+
+				occupied.push(...validNeigbors);
+			});
 		}
-		console.log(ships[i]);
-		occupied.push(...ships[i].coords);
-
-		ships[i].coords.forEach((i) => {
-			let y = Math.floor(i / fieldSize);
-			let x = i % fieldSize;
-
-			let neighbors = [
-				{ x: x + 1, y },
-				{ x: x - 1, y },
-				{ x, y: y + 1 },
-				{ x, y: y - 1 },
-				{ x: x + 1, y: y - 1 },
-				{ x: x + 1, y: y + 1 },
-				{ x: x - 1, y: y + 1 },
-				{ x: x - 1, y: y - 1 },
-			];
-
-			let validNeigbors = neighbors
-				.filter(validPos)
-				.map((o) => o.x + o.y * fieldSize);
-
-			occupied.push(...validNeigbors);
-		});
 	}
-
 	// game actions
 
 	function checkCell(i) {
@@ -166,7 +156,8 @@
 			if (ship.isSunk == false) {
 				ship.isSunk = 2;
 				sunkShips+=1;
-				text="Magic unicorn sunk a ship!"
+		 shipsLeft==1? textOption="There's": textOption="There are";
+				text=`Magic unicorn sunk a ship! ${textOption} only ${shipsLeft} left.`
 				shipsLeft = ships.length - sunkShips;
 				ship.damagedCells = ship.shipLength;
 				damagedCells+=ship.shipLength;
@@ -184,8 +175,32 @@
 	}
 
 $: if (sunkShips==ships.length) {
-	text="Congratulations! You won."
+	text="Congratulations! You won. All the ship's are sunk."
 	
+}
+
+function restart(){
+	sunkShips = 0;
+	damagedCells = 0;
+	attempts = 0;
+	text = "The Empire set it's ships in your sea. Find and sink them!";
+    unicornState = false;
+	powerLevel=0;
+
+	cells=[];
+	for (let counter = 0; counter < fieldSize * fieldSize; counter++) {
+		cells.push({ ship: false, checked: false });
+	}
+
+	occupied=[];
+	ships = [
+		{ shipLength: 3, isSunk: false, cellDamage: 0, coords: [] },
+		{ shipLength: 2, isSunk: false, cellDamage: 0, coords: [] },
+		{ shipLength: 2, isSunk: false, cellDamage: 0, coords: [] },
+		{ shipLength: 1, isSunk: false, cellDamage: 0, coords: [] },
+		{ shipLength: 1, isSunk: false, cellDamage: 0, coords: [] },
+	];
+	placeShips();
 }
 
 </script>
@@ -237,7 +252,7 @@ $: if (sunkShips==ships.length) {
 
 <div class=scaleContainer>
 	<h2>You are the winner!</h2>
-	<button class='resettingButton' >
+	<button class='resettingButton' on:click={restart} >
 		RESTART GAME
 	</button>
 </div>
@@ -295,6 +310,7 @@ $: if (sunkShips==ships.length) {
 		width: 100%;
 		height: 40px;
 		border-radius: 5px;
+		background-color:aqua;
 	}
 
 	.bottom {
@@ -309,7 +325,7 @@ $: if (sunkShips==ships.length) {
 		left: 0;
 		width: 5%;
 		height: 40px;
-		background: rgb(250, 60, 60);
+		background-color:rgb(128, 248, 124);
 		border-radius: 5px;
 
 		/* transition: background-color 0.5s; */
@@ -317,27 +333,28 @@ $: if (sunkShips==ships.length) {
 	}
 
 	.closer1 {
+		background-color:rgb(128, 248, 124);;
 		width: 20%;
 	}
 
 	.closer2 {
 		width: 40%;
-		background-color: rgb(97, 251, 102);
+		background-color: rgb(117, 251, 139);
 	}
 
 	.closer3 {
 		width: 60%;
-		background-color: rgb(0, 255, 247);
+		background-color: rgb(173, 251, 117);
 	}
 
 	.closer4 {
 		width: 80%;
-		background-color: rgb(117, 251, 217);
+		background-color: rgb(240, 251, 117);
 	}
 
 	.closer5 {
 		width: 100%;
-		background-color: rgb(220, 248, 97);
+		background-color: rgb(250, 255, 111);
 	}
 
 
@@ -350,22 +367,22 @@ $: if (sunkShips==ships.length) {
 
 @keyframes color {
   0% {
-    background-color: #222;
+    background-color: rgb(234, 250, 4);
   }
   20% {
-    background-color: #4285f4;
+    background-color: #f44242;
   }
   40% {
-    background-color: #222;
+    background-color:  rgb(24, 16, 246);
   }
   60% {
-    background-color: #4285f4;
+    background-color: #f442dc;
   } 
   80% {
-    background-color: #222;
+    background-color: rgb(212, 246, 16);
   }
   100% {
-    background-color: #4285f4;
+    background-color: #f44242;
   }
 }
 
@@ -398,6 +415,6 @@ $: if (sunkShips==ships.length) {
 	}
 
 	.sunk {
-		background-color: brown;
+		background-color:brown;
 	}
 </style>
