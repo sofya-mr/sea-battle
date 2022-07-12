@@ -159,7 +159,7 @@
 	}
 
 	$: if (sunkShips == ships.length) {
-		text = "Congratulations! You won. All the ship's are sunk.";
+		text = "Congratulations! You won. All ships are sunk.";
 	}
 
 	function restart() {
