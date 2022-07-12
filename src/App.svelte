@@ -1,7 +1,7 @@
 <script>
 	import Field from "./Field.svelte";
 	import StatsMagic from "./StatsMagic.svelte";
-	import { newShips, directions } from "./helpers"
+	import { newShips, directions } from "./helpers";
 
 	let sunkShips = 0;
 	let damagedCells = 0;
@@ -48,7 +48,7 @@
 			}
 		}
 
-		ships[i].coords.forEach((ind) => (cells[ind].ship = ships[i])); //добавляем определенным клеткам (инд) проперти шипс, присваиваем туда
+		ships[i].coords.forEach(ind => (cells[ind].ship = ships[i])); //добавляем определенным клеткам (инд) проперти шипс, присваиваем туда
 		//аналогичный объект из массива шипс (то есть целый корабль)
 		return true;
 	}
@@ -56,7 +56,7 @@
 		// {x, y}
 		const x = point.x;
 		const y = point.y;
-	
+
 		if (x > fieldSize || x < 0 || y > fieldSize || y < 0) {
 			return false;
 		}
@@ -80,7 +80,7 @@
 
 			occupied.push(...ships[i].coords);
 
-			ships[i].coords.forEach((i) => {
+			ships[i].coords.forEach(i => {
 				let y = Math.floor(i / fieldSize);
 				let x = i % fieldSize;
 
@@ -97,7 +97,7 @@
 
 				let validNeigbors = neighbors
 					.filter(validPos)
-					.map((o) => o.x + o.y * fieldSize);
+					.map(o => o.x + o.y * fieldSize);
 
 				occupied.push(...validNeigbors);
 			});
@@ -131,7 +131,7 @@
 
 	//magic
 
-	function magic(i) {
+	function magic() {
 		unicornState = !unicornState;
 		setTimeout(() => {
 			powerLevel = 0;
@@ -179,6 +179,7 @@
 		ships = newShips();
 		placeShips();
 	}
+
 </script>
 
 <div>
@@ -186,13 +187,12 @@
 		src="./unicorn.png"
 		alt="Unicorn Gif"
 		class="image"
-		class:fly={!unicornState}
-	/>
+		class:fly={!unicornState} />
 </div>
 
 <p>{text}</p>
 
-<Field on:fire={(ev) => checkCell(ev.detail)} {fieldSize} {cells} />
+<Field on:fire={ev => checkCell(ev.detail)} {fieldSize} {cells} />
 <StatsMagic
 	on:activateUnicorn={magic}
 	on:restart={restart}
@@ -201,8 +201,7 @@
 	{shipsLeft}
 	{attempts}
 	{powerLevel}
-	{ships}
-/>
+	{ships} />
 
 <style>
 	p {
@@ -219,4 +218,5 @@
 	.fly {
 		left: 2000px;
 	}
+
 </style>
