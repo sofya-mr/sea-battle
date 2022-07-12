@@ -24,7 +24,10 @@
 
 	function getCoords(i, obj) {
 		watchDog++;
-		if (watchDog > 1000) alert("bad things happen");
+		if (watchDog > 1000) {
+			setTimeout(restart, 100);
+			throw "bad things happen";
+		}
 
 		let dir = directions[Math.floor(Math.random() * 2)];
 		if (
@@ -169,6 +172,7 @@
 		text = "The Empire set it's ships in your sea. Find and sink them!";
 		unicornState = false;
 		powerLevel = 0;
+		watchDog = 0;
 
 		cells = [];
 		for (let counter = 0; counter < fieldSize * fieldSize; counter++) {
